@@ -1,6 +1,6 @@
 # Quick Notes
 ## Install
-### Method 2: From source
+### From source
 
 1. Clone this repository and navigate to the FastChat folder
 
