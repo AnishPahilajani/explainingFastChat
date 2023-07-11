@@ -19,6 +19,23 @@ def send_input(input_data):
     process.stdin.flush()
     response = process.stdout.readline().decode()
     print(response)
+    
+
+def read_lines_from_file(file_path):
+    try:
+        with open(file_path, 'r') as file:
+            for line in file:
+                yield line.strip()
+    except FileNotFoundError:
+        print(f"File '{file_path}' not found.")
+    except IOError:
+        print(f"Error reading file '{file_path}'.")
+
+file_path = 'data.txt'
+
+# for line in read_lines_from_file(file_path):
+#     print(line)
+#     send_input(line)
 
 # Send initial input
 send_input('hello\n')
