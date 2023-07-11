@@ -1,3 +1,21 @@
+# Quick Notes
+## Install
+### Method 2: From source
+
+1. Clone this repository and navigate to the FastChat folder
+
+2. Install Package
+```bash
+pip3 install --upgrade pip  # enable PEP 660 support
+pip3 install -e .
+```
+
+3. run ``` python fastChatAPI.py ```
+
+-----------------------------------------
+
+
+
 # FastChat
 | [**Demo**](https://chat.lmsys.org/) | [**Arena**](https://arena.lmsys.org) | [**Discord**](https://discord.gg/HSWAKCrnFx) | [**Twitter**](https://twitter.com/lmsysorg) |
 
