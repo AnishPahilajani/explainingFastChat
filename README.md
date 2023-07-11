@@ -12,6 +12,13 @@ pip3 install -e .
 
 3. run ``` python fastChatAPI.py ```
 
+
+# Hardware
+
+- 2 RTX 3090
+- 64 GB RAM
+- 16 Cores
+
 -----------------------------------------
 
 
