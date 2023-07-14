@@ -10,7 +10,7 @@ pip3 install --upgrade pip  # enable PEP 660 support
 pip3 install -e .
 ```
 
-3. run ``` python fastChatAPI.py ```
+3. run ``` python3 -m fastchat.serve.cli --model-path lmsys/vicuna-7b-v1.3 --num-gpus 2 ```
 
 
 # Hardware
