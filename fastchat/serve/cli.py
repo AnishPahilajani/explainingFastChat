@@ -25,26 +25,46 @@ from rich.markdown import Markdown
 from fastchat.model.model_adapter import add_model_args
 from fastchat.modules.gptq import GptqConfig
 from fastchat.serve.inference import ChatIO, chat_loop
+import csv
 
 
 class SimpleChatIO(ChatIO):
-    def prompt_for_input(self, role) -> str:
-        return input(f"{role}: ")
+    def __init__(self):
+        self._csv_file = "./sst_dataset.csv"  # Specify the path to the CSV file
+        self.data_to_write = []
+        
+    def prompt_for_input(self, role, prompt, label) -> str:
+        #print(f"INPUT: {role}: {prompt}, LABLE: {label}")
+        self.data_to_write = []
+        self.data_to_write.append(prompt)
+        self.data_to_write.append(label)
+        return f"{role}: {prompt}"
 
     def prompt_for_output(self, role: str):
-        print(f"{role}: ", end="", flush=True)
+        pass
+        #print(f"{role}: ", end="", flush=True)
 
     def stream_output(self, output_stream):
         pre = 0
+        output_text = ""
         for outputs in output_stream:
             output_text = outputs["text"]
             output_text = output_text.strip().split(" ")
             now = len(output_text) - 1
             if now > pre:
-                print(" ".join(output_text[pre:now]), end=" ", flush=True)
+                #print(" ".join(output_text[pre:now]), end=" ", flush=True)
                 pre = now
-        print(" ".join(output_text[pre:]), flush=True)
+        self.data_to_write.append(" ".join(output_text)[-8:])
+        self.write_to_csv(self.data_to_write)
         return " ".join(output_text)
+    
+    def write_to_csv(self, data):
+        header_exists = os.path.isfile(self._csv_file) and os.stat(self._csv_file).st_size != 0
+        with open(self._csv_file, mode="a", newline="") as file:
+            writer = csv.writer(file)
+            if not header_exists:
+                writer.writerow(["prompt", "label", "prediction"])
+            writer.writerow(data)
 
 
 class RichChatIO(ChatIO):
@@ -146,6 +166,7 @@ class ProgrammaticChatIO(ChatIO):
 
 
 def main(args):
+    print("AHP: ", args)
     if args.gpus:
         if len(args.gpus.split(",")) < args.num_gpus:
             raise ValueError(
@@ -154,6 +175,7 @@ def main(args):
         os.environ["CUDA_VISIBLE_DEVICES"] = args.gpus
 
     if args.style == "simple":
+        print("SIMPLY STYLE")
         chatio = SimpleChatIO()
     elif args.style == "rich":
         chatio = RichChatIO()
@@ -210,3 +232,4 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
     main(args)
+

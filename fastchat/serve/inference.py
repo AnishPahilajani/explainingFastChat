@@ -286,21 +286,67 @@ def chat_loop(
         return conv
 
     conv = new_chat()
+    
+    # AHP # hugging face
+    from datasets import load_dataset
+    import os.path
 
-    while True:
+    # Load SST dataset
+    dataset = load_dataset("sst")
+
+    # Access train split
+    train_dataset = dataset["train"]
+
+    # Access text and labels from the train split
+    train_texts = train_dataset["sentence"]
+    train_labels = train_dataset["label"]
+
+    # Specify the path to the CSV file
+    csv_file = "sst_dataset.csv"
+
+    # Check if the CSV file exists
+    file_exists = os.path.isfile(csv_file)
+    print("LEN OF TRAIN: ", len(train_texts))
+    for text, label in zip(train_texts[:40], train_labels[:40]):#zip(train_texts[:5], train_labels[:5]):
+        #writer.writerow([text, label])
         try:
-            inp = chatio.prompt_for_input(conv.roles[0])
+            m = f"Please tell me the sentiment of the text in single quotes '{text}'. make sure you respond as a single word either positive or negetive\n"
+            inp = chatio.prompt_for_input(conv.roles[0], m, label)
         except EOFError:
             inp = ""
+        
+        
+# working        
+#     l = ['hello\n', 'what can you do?\n', 'can you tell me the sentiment of this text, "today is a good day" respond as a single word"\n', '\n\n\n what are you? \n\n\n']
+#     for i in l:
+#         try:
+#             inp = chatio.prompt_for_input(conv.roles[0], i)
+#         except EOFError:
+#             inp = ""
 
-        if inp == "!!exit" or not inp:
-            print("exit...")
-            break
+#         if inp == "!!exit" or not inp:
+#             print("exit...")
+#             break
 
-        if inp == "!!reset":
-            print("resetting...")
-            conv = new_chat()
-            continue
+#         if inp == "!!reset":
+#             print("resetting...")
+#             conv = new_chat()
+#             continue
+
+#     while True:
+#         try:
+#             inp = chatio.prompt_for_input(conv.roles[0])
+#         except EOFError:
+#             inp = ""
+
+#         if inp == "!!exit" or not inp:
+#             print("exit...")
+#             break
+
+#         if inp == "!!reset":
+#             print("resetting...")
+#             conv = new_chat()
+#             continue
 
         conv.append_message(conv.roles[0], inp)
         conv.append_message(conv.roles[1], None)
