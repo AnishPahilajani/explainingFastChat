@@ -8,6 +8,9 @@
 ```bash
 pip3 install --upgrade pip  # enable PEP 660 support
 pip3 install -e .
+pip3 install datasets
+pip3 install tensorrt
+
 ```
 
 3. run ``` python3 -m fastchat.serve.cli --model-path lmsys/vicuna-7b-v1.3 --num-gpus 2 ```
