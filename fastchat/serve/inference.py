@@ -301,17 +301,69 @@ def chat_loop(
     train_texts = train_dataset["sentence"]
     train_labels = train_dataset["label"]
 
-    # Specify the path to the CSV file
-    csv_file = "sst_dataset.csv"
+#     # Specify the path to the CSV file
+#     csv_file = "sst_dataset.csv"
 
-    # Check if the CSV file exists
-    file_exists = os.path.isfile(csv_file)
+#     # Check if the CSV file exists
+#     file_exists = os.path.isfile(csv_file)
     print("LEN OF TRAIN: ", len(train_texts))
-    for text, label in zip(train_texts[:40], train_labels[:40]):#zip(train_texts[:5], train_labels[:5]):
+    for text, label in zip(train_texts[0:10], train_labels[0:10]):#zip(train_texts[:5], train_labels[:5]):
         #writer.writerow([text, label])
+        conv = new_chat()
+        few_shot_data = [
+             [''' Classify the following sentence as either positive or negative: “that loves its characters and communicates something rather beautiful about human nature.” ''', 1],
+             #[f''' Classify the following sentence as either positive or negative: "{text}"''', label]
+            ]
+        few_shot_data.append([f''' Classify the following sentence as either positive or negative: "{text}"''', label])
         try:
-            m = f"Please tell me the sentiment of the text in single quotes '{text}'. make sure you respond as a single word either positive or negetive\n"
-            inp = chatio.prompt_for_input(conv.roles[0], m, label)
+            for i in range(len(few_shot_data)):
+                if i <= len(few_shot_data) -2:
+                    inp = chatio.prompt_for_input(conv.roles[0], few_shot_data[i][0], few_shot_data[i][1], False)
+                else:
+                    inp = chatio.prompt_for_input(conv.roles[0], few_shot_data[i][0], few_shot_data[i][1], True)
+                conv.append_message(conv.roles[0], inp)
+                conv.append_message(conv.roles[1], None)
+
+                if is_chatglm:
+                    generate_stream_func = chatglm_generate_stream
+                    prompt = conv.messages[conv.offset :]
+                elif is_falcon:
+                    generate_stream_func = falcon_generate_stream
+                    prompt = conv.get_prompt()
+                else:
+                    generate_stream_func = generate_stream
+                    prompt = conv.get_prompt()
+
+                gen_params = {
+                    "model": model_path,
+                    "prompt": prompt,
+                    "temperature": temperature,
+                    "repetition_penalty": repetition_penalty,
+                    "max_new_tokens": max_new_tokens,
+                    "stop": conv.stop_str,
+                    "stop_token_ids": conv.stop_token_ids,
+                    "echo": False,
+                }
+
+                chatio.prompt_for_output(conv.roles[1])
+                output_stream = generate_stream_func(model, tokenizer, gen_params, device)
+                t = time.time()
+                outputs = chatio.stream_output(output_stream)
+                duration = time.time() - t
+                conv.update_last_message(outputs.strip())
+
+                if debug:
+                    num_tokens = len(tokenizer.encode(outputs))
+                    msg = {
+                        "conv_template": conv.name,
+                        "prompt": prompt,
+                        "outputs": outputs,
+                        "speed (token/s)": round(num_tokens / duration, 2),
+                    }
+                    print(f"\n{msg}\n")
+            few_shot_data.pop()
+            
+            
         except EOFError:
             inp = ""
         
@@ -348,43 +400,52 @@ def chat_loop(
 #             conv = new_chat()
 #             continue
 
-        conv.append_message(conv.roles[0], inp)
-        conv.append_message(conv.roles[1], None)
 
-        if is_chatglm:
-            generate_stream_func = chatglm_generate_stream
-            prompt = conv.messages[conv.offset :]
-        elif is_falcon:
-            generate_stream_func = falcon_generate_stream
-            prompt = conv.get_prompt()
-        else:
-            generate_stream_func = generate_stream
-            prompt = conv.get_prompt()
 
-        gen_params = {
-            "model": model_path,
-            "prompt": prompt,
-            "temperature": temperature,
-            "repetition_penalty": repetition_penalty,
-            "max_new_tokens": max_new_tokens,
-            "stop": conv.stop_str,
-            "stop_token_ids": conv.stop_token_ids,
-            "echo": False,
-        }
 
-        chatio.prompt_for_output(conv.roles[1])
-        output_stream = generate_stream_func(model, tokenizer, gen_params, device)
-        t = time.time()
-        outputs = chatio.stream_output(output_stream)
-        duration = time.time() - t
-        conv.update_last_message(outputs.strip())
 
-        if debug:
-            num_tokens = len(tokenizer.encode(outputs))
-            msg = {
-                "conv_template": conv.name,
-                "prompt": prompt,
-                "outputs": outputs,
-                "speed (token/s)": round(num_tokens / duration, 2),
-            }
-            print(f"\n{msg}\n")
+
+
+
+
+
+#         conv.append_message(conv.roles[0], inp)
+#         conv.append_message(conv.roles[1], None)
+
+#         if is_chatglm:
+#             generate_stream_func = chatglm_generate_stream
+#             prompt = conv.messages[conv.offset :]
+#         elif is_falcon:
+#             generate_stream_func = falcon_generate_stream
+#             prompt = conv.get_prompt()
+#         else:
+#             generate_stream_func = generate_stream
+#             prompt = conv.get_prompt()
+
+#         gen_params = {
+#             "model": model_path,
+#             "prompt": prompt,
+#             "temperature": temperature,
+#             "repetition_penalty": repetition_penalty,
+#             "max_new_tokens": max_new_tokens,
+#             "stop": conv.stop_str,
+#             "stop_token_ids": conv.stop_token_ids,
+#             "echo": False,
+#         }
+
+#         chatio.prompt_for_output(conv.roles[1])
+#         output_stream = generate_stream_func(model, tokenizer, gen_params, device)
+#         t = time.time()
+#         outputs = chatio.stream_output(output_stream)
+#         duration = time.time() - t
+#         conv.update_last_message(outputs.strip())
+
+#         if debug:
+#             num_tokens = len(tokenizer.encode(outputs))
+#             msg = {
+#                 "conv_template": conv.name,
+#                 "prompt": prompt,
+#                 "outputs": outputs,
+#                 "speed (token/s)": round(num_tokens / duration, 2),
+#             }
+#             print(f"\n{msg}\n")

@@ -33,9 +33,11 @@ class SimpleChatIO(ChatIO):
         self._csv_file = "./sst_dataset.csv"  # Specify the path to the CSV file
         self.data_to_write = []
         
-    def prompt_for_input(self, role, prompt, label) -> str:
+    def prompt_for_input(self, role, prompt, label, print_data) -> str:
         #print(f"INPUT: {role}: {prompt}, LABLE: {label}")
         self.data_to_write = []
+        if print_data == False:
+            return f"{role}: {prompt}"
         self.data_to_write.append(prompt)
         self.data_to_write.append(label)
         return f"{role}: {prompt}"
@@ -54,8 +56,9 @@ class SimpleChatIO(ChatIO):
             if now > pre:
                 #print(" ".join(output_text[pre:now]), end=" ", flush=True)
                 pre = now
-        self.data_to_write.append(" ".join(output_text)[-8:])
-        self.write_to_csv(self.data_to_write)
+        if self.data_to_write != []:
+            self.data_to_write.append(" ".join(output_text))
+            self.write_to_csv(self.data_to_write)
         return " ".join(output_text)
     
     def write_to_csv(self, data):
@@ -64,7 +67,9 @@ class SimpleChatIO(ChatIO):
             writer = csv.writer(file)
             if not header_exists:
                 writer.writerow(["prompt", "label", "prediction"])
-            writer.writerow(data)
+            if self.data_to_write != []:
+                writer.writerow(data)
+                
 
 
 class RichChatIO(ChatIO):
