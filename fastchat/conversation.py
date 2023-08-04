@@ -259,7 +259,16 @@ register_conv_template(
         system="A chat between a curious user and an artificial intelligence assistant. "
         "The assistant gives helpful, detailed, and polite answers to the user's questions.",
         roles=("USER", "ASSISTANT"),
-        messages=(),
+        messages=( # FEW SHOT LEARNING
+            (
+                "USER",
+                ''' Classify the following sentence as either positive or negative: “that loves its characters and communicates something rather beautiful about human nature.” ''',
+            ),
+            (
+                "ASSISTANT",
+                "The answer is positive.",
+            ),
+        ),
         offset=0,
         sep_style=SeparatorStyle.ADD_COLON_TWO,
         sep=" ",

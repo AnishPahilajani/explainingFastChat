@@ -307,12 +307,29 @@ def chat_loop(
 #     # Check if the CSV file exists
 #     file_exists = os.path.isfile(csv_file)
     print("LEN OF TRAIN: ", len(train_texts))
-    for text, label in zip(train_texts[0:10], train_labels[0:10]):#zip(train_texts[:5], train_labels[:5]):
+    for text, label in zip(train_texts[:2], train_labels[:2]):#zip(train_texts[:5], train_labels[:5]):
         #writer.writerow([text, label])
         conv = new_chat()
         few_shot_data = [
-             [''' Classify the following sentence as either positive or negative: “that loves its characters and communicates something rather beautiful about human nature.” ''', 1],
+             # [''' Classify the following sentence as either positive or negative: “that loves its characters and communicates something rather beautiful about human nature.” ''', 1],
              #[f''' Classify the following sentence as either positive or negative: "{text}"''', label]
+#             [''' Classify the following sentence as either positive or negative: “demonstrates that the director of such hollywood blockbusters as patriot games can still turn out a small, personal film with an emotional wallop.”''', 1],
+            
+#             [''' Classify the following sentence as either positive or negative: “are more deeply thought through than in most
+# ’right-thinking’ films.” ''', 1],
+            
+#             [''' Classify the following sentence as either positive or negative: “swimming is above all about a young woman’s face, and by casting an actress whose face projects that woman’s doubts and yearnings, it succeeds.” ''', 1],
+            
+#             [''' Classify the following sentence as either positive or negative: “for those moviegoers who complain that ’they don’t make movies like they used to anymore.’” ''', 0],
+            
+#             [''' Classify the following sentence as either positive or negative: “which half of dragonfly is worse: the part where nothing’s happening, or the part where something’s happening.” ''', 0],
+            
+            
+#             ['''  Classify the following sentence as either positive or negative: “the plot is nothing but boilerplate cliches from start to finish''', 0],
+            
+#             [''' Classify the following sentence as either positive or negative: “will find little of interest in this film, which is often preachy and poorly acted.” ''', 0]
+            
+            
             ]
         few_shot_data.append([f''' Classify the following sentence as either positive or negative: "{text}"''', label])
         try:
