@@ -268,6 +268,46 @@ register_conv_template(
                 "ASSISTANT",
                 "The answer is positive.",
             ),
+            (
+                "USER",
+                '''Classify the following sentence as either positive or negative: “demonstrates that the director of such hollywood blockbusters as patriot games can still turn out a small, personal film with an emotional wallop.”''',
+            ),
+            (
+                "ASSISTANT",
+                "The answer is positive.",
+            ),
+            (
+                "USER",
+                '''Classify the following sentence as either positive or negative: “swimming is above all about a young woman’s face, and by casting an actress whose face projects that woman’s doubts and yearnings, it succeeds.”''',
+            ),
+            (
+                "ASSISTANT",
+                "The answer is positive.",
+            ),
+            (
+                "USER",
+                '''Classify the following sentence as either positive or negative: “for those moviegoers who complain that ’they don’t make movies like they used to anymore.’”''',
+            ),
+            (
+                "ASSISTANT",
+                "The answer is negative.",
+            ),
+            (
+                "USER",
+                '''Classify the following sentence as either positive or negative: “which half of dragonfly is worse: the part where nothing’s happening, or the part where something’s happening.”''',
+            ),
+            (
+                "ASSISTANT",
+                "The answer is negative.",
+            ),
+            (
+                "USER",
+                ''' Classify the following sentence as either positive or negative: “the plot is nothing but boilerplate cliches from start to finish.”''',
+            ),
+            (
+                "ASSISTANT",
+                "The answer is negative.",
+            ),
         ),
         offset=0,
         sep_style=SeparatorStyle.ADD_COLON_TWO,
