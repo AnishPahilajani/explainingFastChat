@@ -307,7 +307,7 @@ def chat_loop(
 #     # Check if the CSV file exists
 #     file_exists = os.path.isfile(csv_file)
     print("LEN OF TRAIN: ", len(train_texts))
-    for text, label in zip(train_texts[:2], train_labels[:2]):#zip(train_texts[:5], train_labels[:5]):
+    for text, label in zip(train_texts[:], train_labels[:]):#zip(train_texts[:5], train_labels[:5]):
         #writer.writerow([text, label])
         conv = new_chat()
         few_shot_data = [
