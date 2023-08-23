@@ -30,7 +30,7 @@ import csv
 
 class SimpleChatIO(ChatIO):
     def __init__(self):
-        self._csv_file = "./sst_dataset.csv"  # Specify the path to the CSV file
+        self._csv_file = "./sst_dataset-TEST.csv"  # Specify the path to the CSV file
         self.data_to_write = []
         
     def prompt_for_input(self, role, prompt, label, print_data) -> str:
