@@ -27,7 +27,6 @@ from fastchat.modules.gptq import GptqConfig
 from fastchat.serve.inference import ChatIO, chat_loop
 import csv
 
-
 class SimpleChatIO(ChatIO):
     def __init__(self):
         self._csv_file = "./sst_dataset-TEST.csv"  # Specify the path to the CSV file
@@ -235,6 +234,7 @@ if __name__ == "__main__":
         action="store_true",
         help="Print useful debug information (e.g., prompts)",
     )
+    
     args = parser.parse_args()
     main(args)
 

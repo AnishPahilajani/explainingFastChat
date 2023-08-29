@@ -33,6 +33,7 @@ from fastchat.model.chatglm_model import chatglm_generate_stream
 from fastchat.model.falcon_model import falcon_generate_stream
 from fastchat.modules.gptq import GptqConfig
 from fastchat.utils import is_partial_stop
+from fastchat.serve.query import prompts
 
 
 def prepare_logits_processor(
@@ -287,102 +288,102 @@ def chat_loop(
 
     conv = new_chat()
     
-    # AHP # hugging face
-    from datasets import load_dataset
-    import os.path
+#     # AHP # hugging face
+#     from datasets import load_dataset
+#     import os.path
 
-    # Load SST dataset
-    dataset = load_dataset("sst")
+#     # Load SST dataset
+#     dataset = load_dataset("sst")
 
-    # Access train split
-    train_dataset = dataset["train"]
+#     # Access train split
+#     train_dataset = dataset["train"]
 
-    # Access text and labels from the train split
-    train_texts = train_dataset["sentence"]
-    train_labels = train_dataset["label"]
+#     # Access text and labels from the train split
+#     train_texts = train_dataset["sentence"]
+#     train_labels = train_dataset["label"]
 
-#     # Specify the path to the CSV file
-#     csv_file = "sst_dataset.csv"
+# #     # Specify the path to the CSV file
+# #     csv_file = "sst_dataset.csv"
 
-#     # Check if the CSV file exists
-#     file_exists = os.path.isfile(csv_file)
-    print("LEN OF TRAIN: ", len(train_texts))
-    for text, label in zip(train_texts[:1], train_labels[:1]):#zip(train_texts[:5], train_labels[:5]):
-        #writer.writerow([text, label])
-        conv = new_chat()
-        few_shot_data = [
-             # [''' Classify the following sentence as either positive or negative: “that loves its characters and communicates something rather beautiful about human nature.” ''', 1],
-             #[f''' Classify the following sentence as either positive or negative: "{text}"''', label]
-#             [''' Classify the following sentence as either positive or negative: “demonstrates that the director of such hollywood blockbusters as patriot games can still turn out a small, personal film with an emotional wallop.”''', 1],
+# #     # Check if the CSV file exists
+# #     file_exists = os.path.isfile(csv_file)
+#     print("LEN OF TRAIN: ", len(train_texts))
+#     for text, label in zip(train_texts[:1], train_labels[:1]):#zip(train_texts[:5], train_labels[:5]):
+#         #writer.writerow([text, label])
+#         conv = new_chat()
+#         prompts = [
+#              # [''' Classify the following sentence as either positive or negative: “that loves its characters and communicates something rather beautiful about human nature.” ''', 1],
+#              #[f''' Classify the following sentence as either positive or negative: "{text}"''', label]
+# #             [''' Classify the following sentence as either positive or negative: “demonstrates that the director of such hollywood blockbusters as patriot games can still turn out a small, personal film with an emotional wallop.”''', 1],
             
-#             [''' Classify the following sentence as either positive or negative: “are more deeply thought through than in most
-# ’right-thinking’ films.” ''', 1],
+# #             [''' Classify the following sentence as either positive or negative: “are more deeply thought through than in most
+# # ’right-thinking’ films.” ''', 1],
             
-#             [''' Classify the following sentence as either positive or negative: “swimming is above all about a young woman’s face, and by casting an actress whose face projects that woman’s doubts and yearnings, it succeeds.” ''', 1],
+# #             [''' Classify the following sentence as either positive or negative: “swimming is above all about a young woman’s face, and by casting an actress whose face projects that woman’s doubts and yearnings, it succeeds.” ''', 1],
             
-#             [''' Classify the following sentence as either positive or negative: “for those moviegoers who complain that ’they don’t make movies like they used to anymore.’” ''', 0],
+# #             [''' Classify the following sentence as either positive or negative: “for those moviegoers who complain that ’they don’t make movies like they used to anymore.’” ''', 0],
             
-#             [''' Classify the following sentence as either positive or negative: “which half of dragonfly is worse: the part where nothing’s happening, or the part where something’s happening.” ''', 0],
-            
-            
-#             ['''  Classify the following sentence as either positive or negative: “the plot is nothing but boilerplate cliches from start to finish''', 0],
-            
-#             [''' Classify the following sentence as either positive or negative: “will find little of interest in this film, which is often preachy and poorly acted.” ''', 0]
+# #             [''' Classify the following sentence as either positive or negative: “which half of dragonfly is worse: the part where nothing’s happening, or the part where something’s happening.” ''', 0],
             
             
-            ]
-        few_shot_data.append([f''' Classify the following sentence as either positive or negative: "{text}"''', label])
-        try:
-            for i in range(len(few_shot_data)):
-                if i <= len(few_shot_data) -2:
-                    inp = chatio.prompt_for_input(conv.roles[0], few_shot_data[i][0], few_shot_data[i][1], False)
-                else:
-                    inp = chatio.prompt_for_input(conv.roles[0], few_shot_data[i][0], few_shot_data[i][1], True)
-                conv.append_message(conv.roles[0], inp)
-                conv.append_message(conv.roles[1], None)
+# #             ['''  Classify the following sentence as either positive or negative: “the plot is nothing but boilerplate cliches from start to finish''', 0],
+            
+# #             [''' Classify the following sentence as either positive or negative: “will find little of interest in this film, which is often preachy and poorly acted.” ''', 0]
+            
+            
+#             ]
+#         prompts.append([f''' Classify the following sentence as either positive or negative: "{text}"''', label])
+    try:
+        for i in range(len(prompts)):
+            if i <= len(prompts) -2:
+                inp = chatio.prompt_for_input(conv.roles[0], prompts[i][0], prompts[i][1], False)
+            else:
+                inp = chatio.prompt_for_input(conv.roles[0], prompts[i][0], prompts[i][1], True)
+            conv.append_message(conv.roles[0], inp)
+            conv.append_message(conv.roles[1], None)
 
-                if is_chatglm:
-                    generate_stream_func = chatglm_generate_stream
-                    prompt = conv.messages[conv.offset :]
-                elif is_falcon:
-                    generate_stream_func = falcon_generate_stream
-                    prompt = conv.get_prompt()
-                else:
-                    generate_stream_func = generate_stream
-                    prompt = conv.get_prompt()
+            if is_chatglm:
+                generate_stream_func = chatglm_generate_stream
+                prompt = conv.messages[conv.offset :]
+            elif is_falcon:
+                generate_stream_func = falcon_generate_stream
+                prompt = conv.get_prompt()
+            else:
+                generate_stream_func = generate_stream
+                prompt = conv.get_prompt()
 
-                gen_params = {
-                    "model": model_path,
+            gen_params = {
+                "model": model_path,
+                "prompt": prompt,
+                "temperature": temperature,
+                "repetition_penalty": repetition_penalty,
+                "max_new_tokens": max_new_tokens,
+                "stop": conv.stop_str,
+                "stop_token_ids": conv.stop_token_ids,
+                "echo": False,
+            }
+
+            chatio.prompt_for_output(conv.roles[1])
+            output_stream = generate_stream_func(model, tokenizer, gen_params, device)
+            t = time.time()
+            outputs = chatio.stream_output(output_stream)
+            duration = time.time() - t
+            conv.update_last_message(outputs.strip())
+
+            if debug:
+                num_tokens = len(tokenizer.encode(outputs))
+                msg = {
+                    "conv_template": conv.name,
                     "prompt": prompt,
-                    "temperature": temperature,
-                    "repetition_penalty": repetition_penalty,
-                    "max_new_tokens": max_new_tokens,
-                    "stop": conv.stop_str,
-                    "stop_token_ids": conv.stop_token_ids,
-                    "echo": False,
+                    "outputs": outputs,
+                    "speed (token/s)": round(num_tokens / duration, 2),
                 }
+                print(f"\n{msg}\n")
+        prompts.pop()
 
-                chatio.prompt_for_output(conv.roles[1])
-                output_stream = generate_stream_func(model, tokenizer, gen_params, device)
-                t = time.time()
-                outputs = chatio.stream_output(output_stream)
-                duration = time.time() - t
-                conv.update_last_message(outputs.strip())
 
-                if debug:
-                    num_tokens = len(tokenizer.encode(outputs))
-                    msg = {
-                        "conv_template": conv.name,
-                        "prompt": prompt,
-                        "outputs": outputs,
-                        "speed (token/s)": round(num_tokens / duration, 2),
-                    }
-                    print(f"\n{msg}\n")
-            few_shot_data.pop()
-            
-            
-        except EOFError:
-            inp = ""
+    except EOFError:
+        inp = ""
         
         
 # working        
