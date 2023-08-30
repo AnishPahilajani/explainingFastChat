@@ -286,7 +286,7 @@ def chat_loop(
             conv = get_conversation_template(model_path)
         return conv
 
-    conv = new_chat()
+    
     
 #     # AHP # hugging face
 #     from datasets import load_dataset
@@ -335,6 +335,7 @@ def chat_loop(
 #         prompts.append([f''' Classify the following sentence as either positive or negative: "{text}"''', label])
     try:
         for i in range(len(prompts)):
+            conv = new_chat()
             if i <= len(prompts) -2:
                 inp = chatio.prompt_for_input(conv.roles[0], prompts[i][0], prompts[i][1], False)
             else:

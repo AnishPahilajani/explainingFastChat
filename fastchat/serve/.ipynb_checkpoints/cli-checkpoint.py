@@ -25,11 +25,12 @@ from rich.markdown import Markdown
 from fastchat.model.model_adapter import add_model_args
 from fastchat.modules.gptq import GptqConfig
 from fastchat.serve.inference import ChatIO, chat_loop
+from fastchat.serve.query import file_name
 import csv
 
 class SimpleChatIO(ChatIO):
     def __init__(self):
-        self._csv_file = "./sst_dataset-TEST.csv"  # Specify the path to the CSV file
+        self._csv_file = file_name  # Specify the path to the CSV file
         self.data_to_write = []
         
     def prompt_for_input(self, role, prompt, label, print_data) -> str:

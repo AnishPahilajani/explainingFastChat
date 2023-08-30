@@ -5,6 +5,7 @@ Conversation prompt templates.
 import dataclasses
 from enum import auto, Enum
 from typing import List, Any, Dict
+from fastchat.serve.query import few_shot_prompts
 
 
 class SeparatorStyle(Enum):
@@ -252,63 +253,14 @@ register_conv_template(
     )
 )
 
-# Vicuna v1.1 template
+# Vicuna v1.1 template AHP
 register_conv_template(
     Conversation(
         name="vicuna_v1.1",
         system="A chat between a curious user and an artificial intelligence assistant. "
         "The assistant gives helpful, detailed, and polite answers to the user's questions.",
         roles=("USER", "ASSISTANT"),
-        messages=( # FEW SHOT LEARNING
-            (
-                "USER",
-                ''' Classify the following sentence as either positive or negative: “that loves its characters and communicates something rather beautiful about human nature.” ''',
-            ),
-            (
-                "ASSISTANT",
-                "The answer is positive.",
-            ),
-            (
-                "USER",
-                '''Classify the following sentence as either positive or negative: “demonstrates that the director of such hollywood blockbusters as patriot games can still turn out a small, personal film with an emotional wallop.”''',
-            ),
-            (
-                "ASSISTANT",
-                "The answer is positive.",
-            ),
-            (
-                "USER",
-                '''Classify the following sentence as either positive or negative: “swimming is above all about a young woman’s face, and by casting an actress whose face projects that woman’s doubts and yearnings, it succeeds.”''',
-            ),
-            (
-                "ASSISTANT",
-                "The answer is positive.",
-            ),
-            (
-                "USER",
-                '''Classify the following sentence as either positive or negative: “for those moviegoers who complain that ’they don’t make movies like they used to anymore.’”''',
-            ),
-            (
-                "ASSISTANT",
-                "The answer is negative.",
-            ),
-            (
-                "USER",
-                '''Classify the following sentence as either positive or negative: “which half of dragonfly is worse: the part where nothing’s happening, or the part where something’s happening.”''',
-            ),
-            (
-                "ASSISTANT",
-                "The answer is negative.",
-            ),
-            (
-                "USER",
-                ''' Classify the following sentence as either positive or negative: “the plot is nothing but boilerplate cliches from start to finish.”''',
-            ),
-            (
-                "ASSISTANT",
-                "The answer is negative.",
-            ),
-        ),
+        messages=few_shot_prompts,
         offset=0,
         sep_style=SeparatorStyle.ADD_COLON_TWO,
         sep=" ",
