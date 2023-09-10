@@ -37,6 +37,7 @@ class SimpleChatIO(ChatIO):
         #print(f"INPUT: {role}: {prompt}, LABLE: {label}")
         self.data_to_write = []
         if print_data == False:
+            #print(f"{role}: {prompt}")
             return f"{role}: {prompt}"
         self.data_to_write.append(prompt)
         self.data_to_write.append(label)
@@ -59,16 +60,18 @@ class SimpleChatIO(ChatIO):
         if self.data_to_write != []:
             self.data_to_write.append(" ".join(output_text))
             self.write_to_csv(self.data_to_write)
+        #print("OUTPUT", " ".join(output_text))
         return " ".join(output_text)
     
     def write_to_csv(self, data):
-        header_exists = os.path.isfile(self._csv_file) and os.stat(self._csv_file).st_size != 0
-        with open(self._csv_file, mode="a", newline="") as file:
-            writer = csv.writer(file)
-            if not header_exists:
-                writer.writerow(["prompt", "label", "prediction"])
-            if self.data_to_write != []:
-                writer.writerow(data)
+        pass
+        # header_exists = os.path.isfile(self._csv_file) and os.stat(self._csv_file).st_size != 0
+        # with open(self._csv_file, mode="a", newline="") as file:
+        #     writer = csv.writer(file)
+        #     if not header_exists:
+        #         writer.writerow(["prompt", "label", "prediction"])
+        #     if self.data_to_write != []:
+        #         writer.writerow(data)
                 
 
 

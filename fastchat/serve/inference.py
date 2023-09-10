@@ -34,6 +34,9 @@ from fastchat.model.falcon_model import falcon_generate_stream
 from fastchat.modules.gptq import GptqConfig
 from fastchat.utils import is_partial_stop
 from fastchat.serve.query import prompts
+from fastchat.serve.query import file_name
+import csv
+import os
 
 
 def prepare_logits_processor(
@@ -333,13 +336,27 @@ def chat_loop(
             
 #             ]
 #         prompts.append([f''' Classify the following sentence as either positive or negative: "{text}"''', label])
+
+    def write_to_csv(data):
+        header_exists = os.path.isfile(file_name) and os.stat(file_name).st_size != 0
+        with open(file_name, mode="a", newline="") as file:
+            writer = csv.writer(file)
+            if not header_exists:
+                writer.writerow(["prompt", "label", "prediction"])
+                writer.writerow(data)
+            else:
+                writer.writerow(data)
+                
+    
     try:
+        print("LEN OF PROMPTS, ", len(prompts))
         for i in range(len(prompts)):
             conv = new_chat()
             if i <= len(prompts) -2:
                 inp = chatio.prompt_for_input(conv.roles[0], prompts[i][0], prompts[i][1], False)
             else:
                 inp = chatio.prompt_for_input(conv.roles[0], prompts[i][0], prompts[i][1], True)
+            #print("INP", inp)
             conv.append_message(conv.roles[0], inp)
             conv.append_message(conv.roles[1], None)
 
@@ -366,6 +383,19 @@ def chat_loop(
 
             chatio.prompt_for_output(conv.roles[1])
             output_stream = generate_stream_func(model, tokenizer, gen_params, device)
+            pre = 0
+            output_text = ""
+            for outputs in output_stream:
+                output_text = outputs["text"]
+                output_text = output_text.strip().split(" ")
+                now = len(output_text) - 1
+                if now > pre:
+                    #print(" ".join(output_text[pre:now]), end=" ", flush=True)
+                    pre = now
+            #print("OUTPUT", " ".join(output_text))
+            write_to_csv([ prompts[i][0], prompts[i][1], " ".join(output_text) ])
+            
+            
             t = time.time()
             outputs = chatio.stream_output(output_stream)
             duration = time.time() - t
