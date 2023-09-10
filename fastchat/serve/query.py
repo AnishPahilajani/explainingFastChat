@@ -1,7 +1,7 @@
 # IMP GLOBAL VARIABLES
 prompts = []
 few_shot_prompts = ()
-file_name = "./TEST.csv"
+file_name = "./TEST_dataset.csv"
 
 
 
@@ -23,7 +23,7 @@ test_texts = test_dataset["sentence"]
 test_labels = test_dataset["label"]
 
 print("LEN OF TRAIN: ", len(test_texts))
-for text, label in zip(test_texts[:2], test_labels[:2]):#zip(train_texts[:5], train_labels[:5]):
+for text, label in zip(test_texts[:], test_labels[:]):#zip(train_texts[:5], train_labels[:5]):
     #writer.writerow([text, label])
     prompts.append([f''' Classify the following sentence as either positive or negative: "{text}"''', label])
 
