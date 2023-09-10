@@ -2,9 +2,11 @@
 ## Install
 ### From source
 
-1. Clone this repository and navigate to the FastChat folder
+1. Clone this repository and navigate to the ``` explainingFastChat/FastChat ``` folder
 
-2. Install Package
+2. switch to ``` code_change ``` branch
+
+3. Install Package
 ```bash
 pip3 install --upgrade pip  # enable PEP 660 support
 pip3 install -e .
@@ -13,12 +15,18 @@ pip3 install tensorrt
 
 ```
 
-3. run ``` python3 -m fastchat.serve.cli --model-path lmsys/vicuna-7b-v1.3 --num-gpus 2 ```
+4. in file ``` query.py ``` file
+   - add prompts to the ``` prompt ``` array
+   - if you would like to do few shot prompting add the prompts to the ``` few_shot_prompts ``` variable
+   - add the name of the csv file you want to see your output data in ``` file_name ``` variable
+   
+
+5. run ``` python3 -m fastchat.serve.cli --model-path lmsys/vicuna-7b-v1.3 ```
 
 
 # Hardware
 
-- 2 RTX 3090
+- 1 RTX 3090
 - 64 GB RAM
 - 16 Cores
 
